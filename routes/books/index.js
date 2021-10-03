@@ -6,7 +6,7 @@ const {BOOKS} = require('../../data');
 const {Book} = require('../../models');
 
 const store = {
-    books: BOOKS.map(book => new Book(book.title, book.description, book.authors, book.fileCover)),
+    books: BOOKS.map(book => new Book(book.title, book.description, book.authors, book.fileCover, book.fileName)),
 };
 
 router.get('/', (req, res) => {
@@ -93,6 +93,26 @@ router.post('/upload',
     } else {
         res.json(null);
     }
+});
+
+router.get('/:id/download', (req, res) => {
+    const { id } = req.params;
+
+    const downloadBookId = store.books.findIndex(item => item.id === id);
+
+    if (downloadBookId === -1) {
+        res.status(404);
+    }
+
+    const downloadBook = store.books[downloadBookId];
+
+    const filePath = `${__dirname}/../../${downloadBook.fileName}`;
+
+    res.download(filePath, 'book.txt', err => {
+        if (err) {
+            res.status(404);
+        }
     });
+});
 
 module.exports = router;
