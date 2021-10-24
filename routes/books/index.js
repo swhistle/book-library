@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fileUpload = require('../../middleware/fileUpload');
 
 const {BOOKS} = require('../../data');
 const {Book} = require('../../models');
@@ -81,5 +82,17 @@ router.delete('/:id', (req, res) => {
     store.books.splice(deletedBookId, 1);
     res.send(true);
 });
+
+router.post('/upload',
+    fileUpload.single('new-book'),
+    (req, res) => {
+    if (req.file) {
+        const {path} = req.file;
+        console.log('path', path);
+        res.json(path);
+    } else {
+        res.json(null);
+    }
+    });
 
 module.exports = router;
