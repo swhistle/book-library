@@ -14,7 +14,7 @@
 Каждый экземпляр книги содержит следующую структуру данных: 
 ```javascript
 {
- id: "string",
+   id: "string",
    title: "string",
    description: "string",
    authors: "string",
