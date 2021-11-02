@@ -9,18 +9,17 @@
 `POST` | `/api/books` | создать книгу | создаем книги и возврашаем ее же вместе с присвоенным **id**
 `PUT` | `/api/books/:id` | редактировать книгу по **id** |  редактируем объект книги, если запись не найдено вернем **Code: 404**
 `DELETE` | `/api/books/:id` | удалить книгу по **id** | удаляем книгу и возвращаем ответ: **'ok'**
-`POST` | `/api/books/upload` | загрузить книгу | upload file и получаем название и путь файла на диске
-`GET` | `/api/books/:id/download` | скачать книгу по **id** | download file, если книга не найдена вернем **Code: 404**
 
 ---
 Каждый экземпляр книги содержит следующую структуру данных: 
 ```javascript
 {
-  id: "string",
-  title: "string",
-  description: "string",
-  authors: "string",
-  fileCover: "string",
-  fileName: "string",
+ id: "string",
+   title: "string",
+   description: "string",
+   authors: "string",
+   favorite: "string",
+   fileCover: "string",
+   fileName: "string"
 }
 ``` 
