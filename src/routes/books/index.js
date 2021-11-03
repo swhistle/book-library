@@ -1,34 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const fileUpload = require('../../middleware/fileUpload');
 
-const {BOOKS} = require('../../data');
-const {Book} = require('../../models');
+const Book = require('../../models/book');
 
-const store = {
-    books: BOOKS.map(book => new Book(book.title, book.description, book.authors, book.fileCover, book.fileName)),
-};
+router.get('/', async (req, res) => {
+    const books = await Book.find().select('-__v');
 
-router.get('/', (req, res) => {
-    res.send(store.books);
+    try {
+        res.send(books);
+    } catch (e) {
+        console.log(e);
+        res.status(500);
+    }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
-    const book = store.books.find(item => item.id === id);
-
-    if (!book) {
+    try {
+        const book = await Book.findById(id).select('-__v');
+        res.send(book);
+    } catch (e) {
+        console.log(e);
         res.status(404);
         res.send('404 | not found');
-        return;
     }
-
-    res.send(book);
 });
 
-router.post('/', (req, res) => {
-    const { title, description, authors, fileCover } = req.body;
+router.post('/', async (req, res) => {
+    const { title, description, authors, fileCover, favorite, fileName } = req.body;
 
     if (!title || !description || !authors || !fileCover) {
         res.status(400);
@@ -36,83 +36,60 @@ router.post('/', (req, res) => {
         return;
     }
 
-    const newBook = new Book(title, description, authors, fileCover);
-    store.books.push(newBook);
-    res.status(201);
-    res.send(newBook);
-});
-
-router.put('/:id', (req, res) => {
-    const { id } = req.params;
-    const { title, description, authors, fileCover } = req.body;
-
-    const updatedBookId = store.books.findIndex(item => item.id === id);
-
-    if (updatedBookId === -1) {
-        res.status(404);
-        res.send('404 | not found');
-        return;
-    }
-
-    const bookForUpdate = store.books[updatedBookId];
-
-    const updatedBook = {
-        ...bookForUpdate,
-        title: title || bookForUpdate.title,
-        description: description || bookForUpdate.description,
-        authors: authors || bookForUpdate.authors,
-        fileCover: fileCover || bookForUpdate.fileCover,
-    };
-
-    store.books.splice(updatedBookId, 1, updatedBook);
-    res.send(updatedBook);
-});
-
-router.delete('/:id', (req, res) => {
-    const { id } = req.params;
-
-    const deletedBookId = store.books.findIndex(item => item.id === id);
-
-    if (deletedBookId === -1) {
-        res.status(404);
-        res.send('404 | not found');
-        return;
-    }
-
-    store.books.splice(deletedBookId, 1);
-    res.send(true);
-});
-
-router.post('/upload',
-    fileUpload.single('new-book'),
-    (req, res) => {
-    if (req.file) {
-        const {path} = req.file;
-        console.log('path', path);
-        res.json(path);
-    } else {
-        res.json(null);
-    }
-});
-
-router.get('/:id/download', (req, res) => {
-    const { id } = req.params;
-
-    const downloadBookId = store.books.findIndex(item => item.id === id);
-
-    if (downloadBookId === -1) {
-        res.status(404);
-    }
-
-    const downloadBook = store.books[downloadBookId];
-
-    const filePath = `${__dirname}/../../${downloadBook.fileName}`;
-
-    res.download(filePath, 'book.txt', err => {
-        if (err) {
-            res.status(404);
-        }
+    const newBook = new Book({
+        title,
+        description,
+        authors,
+        favorite,
+        fileCover,
+        fileName,
     });
+
+    try {
+        await newBook.save();
+
+        res.status(201);
+        res.send(newBook);
+    } catch (e) {
+        console.log(e);
+        res.status(500);
+    }
+});
+
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, description, authors, fileCover, favorite, fileName } = req.body;
+
+    try {
+        await Book.findByIdAndUpdate(id, {
+            title,
+            description,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+        })
+        res.send(true);
+        res.status(202);
+    } catch (e) {
+        console.log(e);
+        res.status(404);
+        res.send('404 | not found');
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await Book.deleteOne({_id: id});
+        res.send(true);
+
+    } catch (e) {
+        console.log(e);
+        res.status(404);
+        res.send('404 | not found');
+    }
 });
 
 module.exports = router;

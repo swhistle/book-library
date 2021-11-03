@@ -19,6 +19,7 @@
   "homepage": "https://github.com/swhistle/book-library#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongoose": "^6.0.12",
     "multer": "^1.4.3",
     "uuid": "^8.3.2"
   },
