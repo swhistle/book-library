@@ -37,6 +37,7 @@ services:
       - DB_PASSWORD=password123
       - DB_NAME=book_library_database
       - DB_HOST=mongodb://mongodb:27017
+      - COOKIE_SECRET=secret
     depends_on:
       - mongodb
     volumes:
