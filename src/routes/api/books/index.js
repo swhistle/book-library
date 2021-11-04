@@ -1,30 +1,33 @@
 const express = require('express');
 const router = express.Router();
 
-const Book = require('../../models/book');
+const Book = require('../../../models/book');
 
 router.get('/', async (req, res) => {
     const books = await Book.find().select('-__v');
 
     try {
-        res.render('books/index', {
-            title: 'Book Library',
-            books: books,
-        });
+        res.send(books);
     } catch (e) {
         console.log(e);
         res.status(500);
     }
 });
 
-router.get('/create', (req, res) => {
-    res.render("books/create", {
-        title: 'Book Library | Add a new book',
-        book: {},
-    });
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const book = await Book.findById(id).select('-__v');
+        res.send(book);
+    } catch (e) {
+        console.log(e);
+        res.status(404);
+        res.send('404 | not found');
+    }
 });
 
-router.post('/create', async (req, res) => {
+router.post('/', async (req, res) => {
     const { title, description, authors, fileCover, favorite, fileName } = req.body;
 
     if (!title || !description || !authors || !fileCover) {
@@ -46,45 +49,14 @@ router.post('/create', async (req, res) => {
         await newBook.save();
 
         res.status(201);
-        res.redirect('/books');
+        res.send(newBook);
     } catch (e) {
         console.log(e);
         res.status(500);
     }
 });
 
-router.get('/:id', async (req, res) => {
-    const {id} = req.params;
-    const book = await Book.findById(id).select('-__v');
-
-    try {
-        res.render('books/view', {
-            title: 'Book Library | View the book',
-            book: book,
-        })
-    } catch (e) {
-        console.log(e);
-        res.status(404).redirect('/404');
-    }
-});
-
-router.get('/update/:id', async (req, res) => {
-    const {id} = req.params;
-    const book = await Book.findById(id).select('-__v');
-
-    try {
-       res.render('books/update', {
-           title: 'Book Library | Update the book',
-           book: book,
-       })
-    } catch (e) {
-        console.log(e);
-        res.status(404);
-        res.redirect('/404');
-    }
-});
-
-router.post('/update/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { title, description, authors, fileCover, favorite, fileName } = req.body;
 
@@ -96,27 +68,27 @@ router.post('/update/:id', async (req, res) => {
             favorite,
             fileCover,
             fileName,
-        });
+        })
+        res.send(true);
         res.status(202);
-        res.redirect(`/books/${id}`);
     } catch (e) {
         console.log(e);
         res.status(404);
-        res.redirect('/404');
+        res.send('404 | not found');
     }
 });
 
-router.post('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
         await Book.deleteOne({_id: id});
-        res.redirect('/books');
+        res.send(true);
 
     } catch (e) {
         console.log(e);
         res.status(404);
-        res.redirect('/404');
+        res.send('404 | not found');
     }
 });
 

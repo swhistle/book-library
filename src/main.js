@@ -1,13 +1,15 @@
 const express = require('express');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 const User = require('./models/user');
 
-const userRouter = require('./routes/user');
 const booksRouter = require('./routes/books');
+const booksApiRouter = require('./routes/api/books');
+const userApiRouter = require('./routes/api/user');
 
 const PORT = process.env.PORT || 3000;
 const UserDB = process.env.DB_USERNAME || 'root';
@@ -50,6 +52,11 @@ const options = {
 
 const app = express();
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
 app.use(express.json());
 
 app.use(session({
@@ -76,7 +83,8 @@ passport.deserializeUser(function (id, cb) {
 //  Добавление стратегии для использования
 passport.use('local', new LocalStrategy(options, verify));
 
-app.use('/api/user', userRouter);
-app.use('/api/books', booksRouter);
+app.use('/books', booksRouter);
+app.use('/api/books', booksApiRouter);
+app.use('/api/user', userApiRouter);
 
 app.listen(PORT);
