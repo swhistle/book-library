@@ -1,4 +1,6 @@
+const http = require('http');
 const express = require('express');
+const socketIO = require('socket.io');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -6,6 +8,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 const User = require('./models/user');
+const onBookReviewsConnection = require('./webSockets/bookReviews');
 
 const booksRouter = require('./routes/books');
 const booksApiRouter = require('./routes/api/books');
@@ -51,6 +54,8 @@ const options = {
 }
 
 const app = express();
+const server = http.Server(app);
+const io = socketIO(server);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -83,8 +88,13 @@ passport.deserializeUser(function (id, cb) {
 //  Добавление стратегии для использования
 passport.use('local', new LocalStrategy(options, verify));
 
+app.get('/', (req, res) => res.redirect('/books'));
 app.use('/books', booksRouter);
 app.use('/api/books', booksApiRouter);
 app.use('/api/user', userApiRouter);
 
-app.listen(PORT);
+io.of('/reviews').on('connection', (socket) => {
+    onBookReviewsConnection(io, socket);
+});
+
+server.listen(PORT);
