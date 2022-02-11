@@ -1,9 +1,9 @@
 const Book = require('../../models/book');
 
 class BooksRepository {
-    static async getBooks(params) {
+    static async getBooks() {
         try {
-            return await Book.find(params).select('-__v');
+            return Book.find().select('-__v');
         } catch (e) {
             console.log(e);
             return null;
@@ -12,16 +12,16 @@ class BooksRepository {
 
     static async getBook(id) {
         try {
-            return await Book.findById(id);
+            return Book.findById(id);
         } catch (e) {
             console.log(e);
             return null;
         }
     }
 
-    static async createBook(title, description, authors, favorite, fileCover, fileName) {
+    static async createBook({title, description, authors, fileCover, fileName}) {
         try {
-            const newBook = new Book({title, description, authors, favorite, fileCover, fileName});
+            const newBook = new Book({title, description, authors, fileCover, fileName});
 
             return newBook.save();
         } catch (e) {
@@ -32,7 +32,7 @@ class BooksRepository {
 
     static async deleteBook(id) {
         try {
-            return await Book.findByIdAndDelete(id);
+            return Book.findByIdAndDelete(id);
         } catch (e) {
             console.log(e);
             return null;
@@ -41,7 +41,7 @@ class BooksRepository {
 
     static async updateBook(id, params) {
         try {
-            return await Book.findByIdAndUpdate(id, {
+            return Book.findByIdAndUpdate(id, {
                 ...params,
             });
         } catch (e) {

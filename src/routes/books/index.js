@@ -1,123 +1,120 @@
 const express = require('express');
 const router = express.Router();
 
-const Book = require('../../models/book');
+const BooksRepository = require('../../modules/book');
 
 router.get('/', async (req, res) => {
-    const books = await Book.find().select('-__v');
+    const books = await BooksRepository.getBooks();
 
-    try {
-        res.render('books/index', {
-            title: 'Book Library',
-            books: books,
-        });
-    } catch (e) {
-        console.log(e);
+    if (!books) {
         res.status(500);
+        return;
     }
+
+    res.render('books/index', {
+        title: 'Book Library',
+        books: books,
+    });
 });
 
 router.get('/create', (req, res) => {
-    res.render("books/create", {
+    res.render('books/create', {
         title: 'Book Library | Add a new book',
         book: {},
     });
 });
 
 router.post('/create', async (req, res) => {
-    const { title, description, authors, fileCover, favorite, fileName } = req.body;
+    const { title, description, authors, fileCover, fileName } = req.body;
 
-    if (!title || !description || !authors || !fileCover) {
+    if (!title || !description || !authors || !fileCover || !fileName) {
         res.status(400);
         res.send('Bad request');
         return;
     }
 
-    const newBook = new Book({
+    const newBook = await BooksRepository.createBook({
         title,
         description,
         authors,
-        favorite,
         fileCover,
         fileName,
     });
 
-    try {
-        await newBook.save();
-
-        res.status(201);
-        res.redirect('/books');
-    } catch (e) {
-        console.log(e);
+    if (!newBook) {
         res.status(500);
+        return;
     }
+
+    res.status(201);
+    res.redirect('/books');
 });
 
 router.get('/:id', async (req, res) => {
     const {id} = req.params;
-    const book = await Book.findById(id).select('-__v');
+    const book = await BooksRepository.getBook(id);
 
-    try {
-        res.render('books/view', {
-            title: 'Book Library | View the book',
-            book: book,
-        })
-    } catch (e) {
-        console.log(e);
+    if (!book) {
         res.status(404).redirect('/404');
+        return;
     }
+
+    res.render('books/view', {
+        title: 'Book Library | View the book',
+        book: book,
+    })
 });
 
 router.get('/update/:id', async (req, res) => {
     const {id} = req.params;
-    const book = await Book.findById(id).select('-__v');
+    const book = await BooksRepository.getBook(id);
 
-    try {
-       res.render('books/update', {
-           title: 'Book Library | Update the book',
-           book: book,
-       })
-    } catch (e) {
-        console.log(e);
+    if (!book) {
         res.status(404);
         res.redirect('/404');
+        return;
     }
+
+    res.render('books/update', {
+        title: 'Book Library | Update the book',
+        book: book,
+    })
 });
 
 router.post('/update/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, description, authors, fileCover, favorite, fileName } = req.body;
+    const { title, description, authors, fileCover, fileName } = req.body;
 
-    try {
-        await Book.findByIdAndUpdate(id, {
-            title,
-            description,
-            authors,
-            favorite,
-            fileCover,
-            fileName,
-        });
-        res.status(202);
-        res.redirect(`/books/${id}`);
-    } catch (e) {
-        console.log(e);
+    const booForUpdate = await BooksRepository.updateBook(id, {
+        title,
+        description,
+        authors,
+        fileCover,
+        fileName,
+    });
+
+    if (!booForUpdate) {
         res.status(404);
         res.redirect('/404');
+        return;
     }
+
+    res.status(202);
+    res.redirect(`/books/${id}`);
 });
 
 router.post('/delete/:id', async (req, res) => {
     const { id } = req.params;
 
-    try {
-        await Book.deleteOne({_id: id});
-        res.redirect('/books');
+    const booForDelete = await BooksRepository.deleteBook(id);
 
-    } catch (e) {
-        console.log(e);
+    if (!booForDelete) {
         res.status(404);
         res.redirect('/404');
+        return;
     }
+
+    res.redirect('/books');
 });
 
 module.exports = router;
