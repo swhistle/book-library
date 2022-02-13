@@ -1,10 +1,17 @@
+// @ts-ignore
+const {injectable} = require('inversify');
+// @ts-ignore
+require('reflect-metadata');
+// @ts-ignore
 const Book = require('../../models/book');
 
+@injectable()
 class BooksRepository {
     static async getBooks() {
         try {
             return Book.find().select('-__v');
         } catch (e) {
+            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -14,6 +21,7 @@ class BooksRepository {
         try {
             return Book.findById(id);
         } catch (e) {
+            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -25,6 +33,7 @@ class BooksRepository {
 
             return newBook.save();
         } catch (e) {
+            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -34,6 +43,7 @@ class BooksRepository {
         try {
             return Book.findByIdAndDelete(id);
         } catch (e) {
+            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -45,10 +55,12 @@ class BooksRepository {
                 ...params,
             });
         } catch (e) {
+            // @ts-ignore
             console.log(e);
             return null;
         }
     }
 }
 
+// @ts-ignore
 module.exports = BooksRepository;

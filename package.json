@@ -2,10 +2,10 @@
   "name": "book-library",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon -L src/app.js",
+    "start": "node src/main.js",
+    "dev": "nodemon -L src/main.js",
     "build": "tsc --project ./tsconfig.json --watch",
     "lint": "eslint --cache --ext .js,.ts src"
   },
