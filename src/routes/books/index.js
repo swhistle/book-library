@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
+const {container} = require('../../config');
 const BooksRepository = require('../../modules/book');
 
 router.get('/', async (req, res) => {
+    const BookService = container.get(BooksRepository);
+    console.log('BookService', BookService);
     const books = await BooksRepository.getBooks();
 
     if (!books) {
