@@ -3,11 +3,14 @@ const {injectable} = require('inversify');
 // @ts-ignore
 require('reflect-metadata');
 // @ts-ignore
-const Book = require('../../models/book');
+const IBooksRepository = require('../modules/book/books.repository');
+// @ts-ignore
+const Book = require('../models/book');
 
 @injectable()
-class BooksRepository {
-    static async getBooks() {
+// @ts-ignore
+class MongoBooksRepository implements IBooksRepository {
+    async getBooks() {
         try {
             return Book.find().select('-__v');
         } catch (e) {
@@ -17,7 +20,7 @@ class BooksRepository {
         }
     }
 
-    static async getBook(id: string) {
+    async getBook(id: string) {
         try {
             return Book.findById(id);
         } catch (e) {
@@ -27,7 +30,7 @@ class BooksRepository {
         }
     }
 
-    static async createBook({title, description, authors, fileCover, fileName}: any) {
+    async createBook({title, description, authors, fileCover, fileName}: any) {
         try {
             const newBook = new Book({title, description, authors, fileCover, fileName});
 
@@ -39,7 +42,7 @@ class BooksRepository {
         }
     }
 
-    static async deleteBook(id: string) {
+    async deleteBook(id: string) {
         try {
             return Book.findByIdAndDelete(id);
         } catch (e) {
@@ -49,7 +52,7 @@ class BooksRepository {
         }
     }
 
-    static async updateBook(id: string, params: any) {
+    async updateBook(id: string, params: any) {
         try {
             return Book.findByIdAndUpdate(id, {
                 ...params,
@@ -63,4 +66,4 @@ class BooksRepository {
 }
 
 // @ts-ignore
-module.exports = BooksRepository;
+module.exports = MongoBooksRepository;

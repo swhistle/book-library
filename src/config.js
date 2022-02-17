@@ -1,8 +1,13 @@
 require('reflect-metadata');
 const {Container} = require('inversify');
-const BooksRepository = require('./modules/book')
+const IBooksRepository = require('./modules/book/books.repository');
+const MongoBooksRepository = require('./infrastructure/books.mongo.repository')
+const BooksService = require('./modules/book/books.service')
 
 const container = new Container();
-container.bind(BooksRepository).toSelf();
+
+container.bind(IBooksRepository).to(MongoBooksRepository);
+
+container.bind(BooksService).toSelf();
 
 module.exports = {container};

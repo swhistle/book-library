@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const {container} = require('../../config');
-const BooksRepository = require('../../modules/book');
+const BooksService = require('../../modules/book/books.service');
 
 router.get('/', async (req, res) => {
-    const BookService = container.get(BooksRepository);
-    console.log('BookService', BookService);
-    const books = await BooksRepository.getBooks();
+    const booksService = container.get(BooksService);
+    const books = await booksService.getBooks();
 
     if (!books) {
         res.status(500);
@@ -29,6 +28,7 @@ router.get('/create', (req, res) => {
 
 router.post('/create', async (req, res) => {
     const { title, description, authors, fileCover, fileName } = req.body;
+    const booksService = container.get(BooksService);
 
     if (!title || !description || !authors || !fileCover || !fileName) {
         res.status(400);
@@ -36,7 +36,7 @@ router.post('/create', async (req, res) => {
         return;
     }
 
-    const newBook = await BooksRepository.createBook({
+    const newBook = await booksService.createBook({
         title,
         description,
         authors,
@@ -55,7 +55,8 @@ router.post('/create', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     const {id} = req.params;
-    const book = await BooksRepository.getBook(id);
+    const booksService = container.get(BooksService);
+    const book = await booksService.getBook(id);
 
     if (!book) {
         res.status(404).redirect('/404');
@@ -70,7 +71,8 @@ router.get('/:id', async (req, res) => {
 
 router.get('/update/:id', async (req, res) => {
     const {id} = req.params;
-    const book = await BooksRepository.getBook(id);
+    const booksService = container.get(BooksService);
+    const book = await booksService.getBook(id);
 
     if (!book) {
         res.status(404);
@@ -86,9 +88,10 @@ router.get('/update/:id', async (req, res) => {
 
 router.post('/update/:id', async (req, res) => {
     const { id } = req.params;
+    const booksService = container.get(BooksService);
     const { title, description, authors, fileCover, fileName } = req.body;
 
-    const booForUpdate = await BooksRepository.updateBook(id, {
+    const booForUpdate = await booksService.updateBook(id, {
         title,
         description,
         authors,
@@ -108,8 +111,9 @@ router.post('/update/:id', async (req, res) => {
 
 router.post('/delete/:id', async (req, res) => {
     const { id } = req.params;
+    const booksService = container.get(BooksService);
 
-    const booForDelete = await BooksRepository.deleteBook(id);
+    const booForDelete = await booksService.deleteBook(id);
 
     if (!booForDelete) {
         res.status(404);
