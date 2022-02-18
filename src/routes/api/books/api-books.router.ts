@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+import Book from '../../../models/book/book.model';
 
-const Book = require('../../../models/book');
+const router = Router();
 
 router.get('/', async (req, res) => {
     const books = await Book.find().select('-__v');
@@ -92,4 +92,4 @@ router.delete('/delete/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

@@ -1,8 +1,9 @@
-const express = require('express');
-const passport = require('passport');
-const router = express.Router();
+import { Router } from 'express';
+import passport from 'passport';
 
-const User = require('../../../models/user');
+import User from '../../../models/user/user.model';
+
+const router = Router();
 
 router.get('/login', (req, res) => {
     res.send('login');
@@ -22,7 +23,7 @@ router.post('/login',
     });
 
 router.post('/signup',
-    async (req, res) => {
+    async (req: any, res) => {
         if (req.isAuthenticated()) {
             if (req.session) {
                 return res.redirect('/');
@@ -63,7 +64,7 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-router.get('/profile', (req, res, next) => {
+router.get('/profile', (req: any, res, next) => {
         console.log('req.isAuthenticated()', req.isAuthenticated());
         if (!req.isAuthenticated || !req.isAuthenticated()) {
             if (req.session) {
@@ -77,4 +78,4 @@ router.get('/profile', (req, res, next) => {
         res.send(`user: ${req.user}`);
     });
 
-module.exports = router;
+export default router;

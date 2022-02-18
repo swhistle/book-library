@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+import { BooksService } from '../../modules/book/books.service';
+import { container } from '../../config';
 
-const {container} = require('../../config');
-const BooksService = require('../../modules/book/books.service');
+const router = Router();
 
 router.get('/', async (req, res) => {
     const booksService = container.get(BooksService);
@@ -124,4 +124,4 @@ router.post('/delete/:id', async (req, res) => {
     res.redirect('/books');
 });
 
-module.exports = router;
+export default router;

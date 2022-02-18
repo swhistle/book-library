@@ -1,11 +1,10 @@
-// @ts-ignore
-const IBooksRepository = require('./books.repository');
-// @ts-ignore
-const {injectable} = require('inversify');
+import 'reflect-metadata';
+import { injectable } from 'inversify';
+import { IBooksRepository } from './books.repository';
+import { IBook } from '../../models/book/book.interface';
 
 @injectable()
-class BooksService {
-    // @ts-ignore
+export class BooksService {
     constructor(private readonly repository: IBooksRepository) {}
 
     getBooks(): Promise<IBook[] | null> {
@@ -28,6 +27,3 @@ class BooksService {
         return this.repository.updateBook(id, params);
     }
 }
-
-// @ts-ignore
-module.exports = BooksService;

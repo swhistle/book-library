@@ -1,4 +1,4 @@
-interface IBook {
+export interface IBook {
     title: string,
     description: string,
     authors: string,

@@ -1,20 +1,14 @@
-// @ts-ignore
-const {injectable} = require('inversify');
-// @ts-ignore
-require('reflect-metadata');
-// @ts-ignore
-const IBooksRepository = require('../modules/book/books.repository');
-// @ts-ignore
-const Book = require('../models/book');
+import 'reflect-metadata';
+import { injectable } from 'inversify';
+import { IBooksRepository } from '../modules/book/books.repository';
+import Book from '../models/book/book.model';
 
 @injectable()
-// @ts-ignore
-class MongoBooksRepository implements IBooksRepository {
+export class MongoBooksRepository implements IBooksRepository {
     async getBooks() {
         try {
             return Book.find().select('-__v');
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -24,7 +18,6 @@ class MongoBooksRepository implements IBooksRepository {
         try {
             return Book.findById(id);
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -36,7 +29,6 @@ class MongoBooksRepository implements IBooksRepository {
 
             return newBook.save();
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -46,7 +38,6 @@ class MongoBooksRepository implements IBooksRepository {
         try {
             return Book.findByIdAndDelete(id);
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -58,12 +49,8 @@ class MongoBooksRepository implements IBooksRepository {
                 ...params,
             });
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
     }
 }
-
-// @ts-ignore
-module.exports = MongoBooksRepository;
