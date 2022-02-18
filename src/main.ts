@@ -7,8 +7,8 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import PassportLocal, { IStrategyOptionsWithRequest } from 'passport-local';
 
-import User from './models/user/user.model';
-import { onBookReviewsConnection } from './webSockets/book-reviews/book-reviews.websocket';
+import { UserModel } from './models/user/user.model';
+import { onBookReviewsConnection } from './web-sockets/book-reviews/book-reviews.websocket';
 
 import booksRouter from './routes/books/books.router';
 import booksApiRouter from './routes/api/books/api-books.router';
@@ -31,8 +31,8 @@ mongoose.connect(HostDB, {
     useUnifiedTopology: true
 });
 
-function verify(username: any, password: any, done: any) {
-    User.findOne({username: username}, function (err: any, user: any) {
+function verify(username: string, password: string, done: any) {
+    UserModel.findOne({username: username}, function (err: any, user: any) {
         console.log('user', user);
         if (err) {
             return done(err);
@@ -82,13 +82,14 @@ passport.serializeUser(function (user: any, cb) {
 });
 
 passport.deserializeUser(function (id, cb) {
-    User.findById(id, function (err: any, user: any) {
+    UserModel.findById(id, function (err: any, user: any) {
         if (err) { return cb(err) }
         cb(null, user);
     });
 });
 
 //  Добавление стратегии для использования
+// @ts-ignore
 passport.use('local', new LocalStrategy(options, verify));
 
 app.get('/', (req, res) => res.redirect('/books'));

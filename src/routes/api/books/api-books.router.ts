@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import Book from '../../../models/book/book.model';
+import { BookModel } from '../../../models/book/book.model';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-    const books = await Book.find().select('-__v');
+    const books = await BookModel.find().select('-__v');
 
     try {
         res.send(books);
@@ -18,7 +18,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const book = await Book.findById(id).select('-__v');
+        const book = await BookModel.findById(id).select('-__v');
         res.send(book);
     } catch (e) {
         console.log(e);
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
         return;
     }
 
-    const newBook = new Book({
+    const newBook = new BookModel({
         title,
         description,
         authors,
@@ -61,7 +61,7 @@ router.put('/:id', async (req, res) => {
     const { title, description, authors, fileCover, favorite, fileName } = req.body;
 
     try {
-        await Book.findByIdAndUpdate(id, {
+        await BookModel.findByIdAndUpdate(id, {
             title,
             description,
             authors,
@@ -82,7 +82,7 @@ router.delete('/delete/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        await Book.deleteOne({_id: id});
+        await BookModel.deleteOne({_id: id});
         res.send(true);
 
     } catch (e) {

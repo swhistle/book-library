@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import passport from 'passport';
 
-import User from '../../../models/user/user.model';
+import { UserModel } from '../../../models/user/user.model';
+import { Request } from 'express-serve-static-core';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.post('/login',
     });
 
 router.post('/signup',
-    async (req: any, res) => {
+    async (req: Request, res) => {
         if (req.isAuthenticated()) {
             if (req.session) {
                 return res.redirect('/');
@@ -38,7 +39,7 @@ router.post('/signup',
             return;
         }
 
-        const user = await User.findOne({username: username});
+        const user = await UserModel.findOne({username: username});
 
         if (user) {
             res.status(409);
@@ -46,7 +47,7 @@ router.post('/signup',
             return;
         }
 
-        const newUser = new User({username, password});
+        const newUser = new UserModel({username, password});
 
         try {
             await newUser.save();
@@ -64,10 +65,11 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-router.get('/profile', (req: any, res, next) => {
+router.get('/profile', (req: Request, res, next) => {
         console.log('req.isAuthenticated()', req.isAuthenticated());
         if (!req.isAuthenticated || !req.isAuthenticated()) {
             if (req.session) {
+                // @ts-ignore
                 req.session.returnTo = req.originalUrl || req.url;
             }
             return res.redirect('/api/user/login');

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { BooksService } from '../../modules/book/books.service';
 import { container } from '../../config';
+import { BooksService } from '../../modules/book/books.service';
 
 const router = Router();
 

@@ -1,13 +1,14 @@
 import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { IBooksRepository } from '../modules/book/books.repository';
-import Book from '../models/book/book.model';
+import { BookModel } from '../models/book/book.model';
+import { IBook } from '../models/book/book.interface';
 
 @injectable()
 export class MongoBooksRepository implements IBooksRepository {
     async getBooks() {
         try {
-            return Book.find().select('-__v');
+            return BookModel.find().select('-__v');
         } catch (e) {
             console.log(e);
             return null;
@@ -16,16 +17,16 @@ export class MongoBooksRepository implements IBooksRepository {
 
     async getBook(id: string) {
         try {
-            return Book.findById(id);
+            return BookModel.findById(id);
         } catch (e) {
             console.log(e);
             return null;
         }
     }
 
-    async createBook({title, description, authors, fileCover, fileName}: any) {
+    async createBook(data: IBook) {
         try {
-            const newBook = new Book({title, description, authors, fileCover, fileName});
+            const newBook = new BookModel(data);
 
             return newBook.save();
         } catch (e) {
@@ -36,16 +37,16 @@ export class MongoBooksRepository implements IBooksRepository {
 
     async deleteBook(id: string) {
         try {
-            return Book.findByIdAndDelete(id);
+            return BookModel.findByIdAndDelete(id);
         } catch (e) {
             console.log(e);
             return null;
         }
     }
 
-    async updateBook(id: string, params: any) {
+    async updateBook(id: string, params: IBook) {
         try {
-            return Book.findByIdAndUpdate(id, {
+            return BookModel.findByIdAndUpdate(id, {
                 ...params,
             });
         } catch (e) {

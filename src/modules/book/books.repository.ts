@@ -8,5 +8,5 @@ export abstract class IBooksRepository {
     abstract getBook(id: string): Promise<IBook | null>;
     abstract createBook(book: IBook): Promise<IBook | null>;
     abstract deleteBook(id: string): Promise<IBook | null>;
-    abstract updateBook(id: string, params: any): Promise<IBook | null>;
+    abstract updateBook(id: string, params: IBook): Promise<IBook | null>;
 }
