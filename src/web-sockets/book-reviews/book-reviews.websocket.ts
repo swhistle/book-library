@@ -1,15 +1,16 @@
-const Review = require('../../models/review');
+import { IReview } from '../../models/review/review.interface';
+import { ReviewModel } from '../../models/review/review.model';
 
-const onBookReviewsConnection = async (io, socket) => {
+export const onBookReviewsConnection = async (io: any, socket: any) => {
     const {id} = socket;
     const {roomName} = socket.handshake.query;
     console.log('socket connected:', id, 'roomName', roomName);
 
-    let reviews = [];
+    let reviews: IReview[] = [];
 
     if (roomName) {
         socket.join(roomName);
-        reviews = await Review.find({bookId: roomName}).select('-_id author text');
+        reviews = await ReviewModel.find({bookId: roomName}).select('-_id author text');
     }
 
     if (reviews && reviews.length > 0) {
@@ -20,11 +21,11 @@ const onBookReviewsConnection = async (io, socket) => {
         console.log('socket disconnected:', id);
     });
 
-    socket.on('review-to-book', (review) => {
+    socket.on('review-to-book', (review: any) => {
         socket.to(roomName).emit('review-to-book', review);
         socket.emit('review-to-book', review);
 
-        const newReview = new Review({
+        const newReview = new ReviewModel({
             bookId: roomName,
             author: review.author,
             text: review.text,
@@ -37,5 +38,3 @@ const onBookReviewsConnection = async (io, socket) => {
         }
     });
 };
-
-module.exports = onBookReviewsConnection;

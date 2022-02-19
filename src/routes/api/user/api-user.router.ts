@@ -1,8 +1,10 @@
-const express = require('express');
-const passport = require('passport');
-const router = express.Router();
+import { Router } from 'express';
+import passport from 'passport';
 
-const User = require('../../../models/user');
+import { UserModel } from '../../../models/user/user.model';
+import { Request } from 'express-serve-static-core';
+
+const router = Router();
 
 router.get('/login', (req, res) => {
     res.send('login');
@@ -22,7 +24,7 @@ router.post('/login',
     });
 
 router.post('/signup',
-    async (req, res) => {
+    async (req: Request, res) => {
         if (req.isAuthenticated()) {
             if (req.session) {
                 return res.redirect('/');
@@ -37,7 +39,7 @@ router.post('/signup',
             return;
         }
 
-        const user = await User.findOne({username: username});
+        const user = await UserModel.findOne({username: username});
 
         if (user) {
             res.status(409);
@@ -45,7 +47,7 @@ router.post('/signup',
             return;
         }
 
-        const newUser = new User({username, password});
+        const newUser = new UserModel({username, password});
 
         try {
             await newUser.save();
@@ -63,10 +65,11 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-router.get('/profile', (req, res, next) => {
+router.get('/profile', (req: Request, res, next) => {
         console.log('req.isAuthenticated()', req.isAuthenticated());
         if (!req.isAuthenticated || !req.isAuthenticated()) {
             if (req.session) {
+                // @ts-ignore
                 req.session.returnTo = req.originalUrl || req.url;
             }
             return res.redirect('/api/user/login');
@@ -77,4 +80,4 @@ router.get('/profile', (req, res, next) => {
         res.send(`user: ${req.user}`);
     });
 
-module.exports = router;
+export default router;

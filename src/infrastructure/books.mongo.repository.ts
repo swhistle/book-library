@@ -1,20 +1,15 @@
-// @ts-ignore
-const {injectable} = require('inversify');
-// @ts-ignore
-require('reflect-metadata');
-// @ts-ignore
-const IBooksRepository = require('../modules/book/books.repository');
-// @ts-ignore
-const Book = require('../models/book');
+import 'reflect-metadata';
+import { injectable } from 'inversify';
+import { IBooksRepository } from '../modules/book/books.repository';
+import { BookModel } from '../models/book/book.model';
+import { IBook } from '../models/book/book.interface';
 
 @injectable()
-// @ts-ignore
-class MongoBooksRepository implements IBooksRepository {
+export class MongoBooksRepository implements IBooksRepository {
     async getBooks() {
         try {
-            return Book.find().select('-__v');
+            return BookModel.find().select('-__v');
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -22,21 +17,19 @@ class MongoBooksRepository implements IBooksRepository {
 
     async getBook(id: string) {
         try {
-            return Book.findById(id);
+            return BookModel.findById(id);
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
     }
 
-    async createBook({title, description, authors, fileCover, fileName}: any) {
+    async createBook(data: IBook) {
         try {
-            const newBook = new Book({title, description, authors, fileCover, fileName});
+            const newBook = new BookModel(data);
 
             return newBook.save();
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
@@ -44,26 +37,21 @@ class MongoBooksRepository implements IBooksRepository {
 
     async deleteBook(id: string) {
         try {
-            return Book.findByIdAndDelete(id);
+            return BookModel.findByIdAndDelete(id);
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
     }
 
-    async updateBook(id: string, params: any) {
+    async updateBook(id: string, params: IBook) {
         try {
-            return Book.findByIdAndUpdate(id, {
+            return BookModel.findByIdAndUpdate(id, {
                 ...params,
             });
         } catch (e) {
-            // @ts-ignore
             console.log(e);
             return null;
         }
     }
 }
-
-// @ts-ignore
-module.exports = MongoBooksRepository;

@@ -1,4 +1,5 @@
-const {Schema, model} = require('mongoose');
+import { Schema, model, Document } from 'mongoose';
+import { IReview } from './review.interface';
 
 const reviewSchema = new Schema({
     bookId: {
@@ -15,4 +16,4 @@ const reviewSchema = new Schema({
     },
 });
 
-module.exports = model('Review', reviewSchema);
+export const ReviewModel = model<Document & IReview>('Review', reviewSchema);
